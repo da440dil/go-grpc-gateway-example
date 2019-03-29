@@ -2,10 +2,25 @@ syntax = "proto3";
 
 package hello;
 
+import "google/api/annotations.proto";
+import "protoc-gen-swagger/options/annotations.proto";
+
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+	info: {
+		title: "Service Greeter";
+		version: "1.0";
+  }
+  schemes: HTTP;
+};
+
 // The greeting service definition.
 service Greeter {
   // Sends a greeting.
-  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc SayHello (HelloRequest) returns (HelloReply) {
+    option(google.api.http) = {
+			get: "/api/v1/hello",
+		};
+  }
 }
 
 // The request message containing the user's name.

@@ -11,10 +11,12 @@ import (
 
 func main() {
 	grpcAddr := "127.0.0.1:50051"
+	httpAddr := "127.0.0.1:50052"
 	stopTimeout := time.Second * 10
 
 	var wg workgroup.Group
 	wg.Add(server.ServeGRPC(grpcAddr, stopTimeout))
+	wg.Add(server.ServeHTTP(httpAddr, grpcAddr, stopTimeout))
 	wg.Add(server.ListenOsSignal(os.Interrupt))
 	if err := wg.Run(); err != nil {
 		log.Fatal(err)
