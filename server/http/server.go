@@ -32,8 +32,18 @@ func (s *Server) Start(addr, grpcAddr string) error {
 		return err
 	}
 
+	mux := http.NewServeMux()
+	mux.HandleFunc("/apidoc/hello.swagger.json", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./proto/hello.swagger.json")
+	})
+	mux.Handle("/", gwmux)
+
+	fs := http.FileServer(http.Dir("./third_party/swagger-ui"))
+	prefix := "/apidoc/"
+	mux.Handle(prefix, http.StripPrefix(prefix, fs))
+
 	s.server.Addr = addr
-	s.server.Handler = gwmux
+	s.server.Handler = mux
 	return s.server.ListenAndServe()
 }
 
